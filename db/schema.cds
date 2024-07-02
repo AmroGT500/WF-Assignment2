@@ -60,3 +60,4 @@ type User : String(20);
 
 // Define 'Timestamp' type for createdAt and modifiedAt fields
 type Timestamp : DateTime;
+// eval next + add groupings 
