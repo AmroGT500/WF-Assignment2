@@ -1,0 +1,175 @@
+_schema-version: "3.1"
+ID: Whole_Foods
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: Whole_Foods-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: Whole_Foods-auth
+  - name: Whole_Foods-db
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+  build-parameters:
+    builder: npm
+- name: Whole_Foods-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: Whole_Foods-db
+  parameters:
+    buildpack: nodejs_buildpack
+- name: Whole_Foods
+  type: approuter.nodejs
+  path: app/router
+  requires:
+  - name: srv-api
+    group: destinations
+    properties:
+      forwardAuthToken: true
+      name: srv-api
+      url: ~{srv-url}
+  - name: Whole_Foods-auth
+  - name: Whole_Foods-destination-service
+    group: destinations
+    properties:
+      forwardAuthToken: false
+      name: ui5
+      url: https://ui5.sap.com
+  parameters:
+    disk-quota: 256M
+    keep-existing-routes: true
+    memory: 256M
+- name: Whole_Foods-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: Whole_Foods-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - wholefoodsmanageplants.zip
+      name: wholefoodsmanageplants
+      target-path: resources/
+    - artifacts:
+      - materialsmaterials.zip
+      name: materialsmaterials
+      target-path: resources/
+    - artifacts:
+      - plantsplants.zip
+      name: plantsplants
+      target-path: resources/
+    - artifacts:
+      - matgrpsmatgrps.zip
+      name: matgrpsmatgrps
+      target-path: resources/
+    - artifacts:
+      - mttypsmttyps.zip
+      name: mttypsmttyps
+      target-path: resources/
+- name: wholefoodsmanageplants
+  type: html5
+  path: app/manage_plants
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: materialsmaterials
+  type: html5
+  path: app/materials
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: plantsplants
+  type: html5
+  path: app/plants
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: matgrpsmatgrps
+  type: html5
+  path: app/matgrps
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: mttypsmttyps
+  type: html5
+  path: app/mttyps
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: Whole_Foods-auth
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      tenant-mode: dedicated
+      xsappname: Whole_Foods-${org}-${space}
+    path: ./xs-security.json
+    service: xsuaa
+    service-plan: application
+- name: Whole_Foods-db
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: Whole_Foods-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: Whole_Foods-html5-srv
+    service-plan: app-host
+- name: Whole_Foods-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: Whole_Foods-destination-service
+    service-plan: lite
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm ci
+    - npx cds build --production
