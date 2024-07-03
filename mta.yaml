@@ -75,6 +75,10 @@ modules:
       - mttypsmttyps.zip
       name: mttypsmttyps
       target-path: resources/
+    - artifacts:
+      - businesspartnersbusinesspartners.zip
+      name: businesspartnersbusinesspartners
+      target-path: resources/
 - name: wholefoodsmanageplants
   type: html5
   path: app/manage_plants
@@ -118,6 +122,16 @@ modules:
 - name: mttypsmttyps
   type: html5
   path: app/mttyps
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: businesspartnersbusinesspartners
+  type: html5
+  path: app/businesspartners
   build-parameters:
     build-result: dist
     builder: custom

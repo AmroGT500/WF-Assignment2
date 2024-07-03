@@ -32,3 +32,13 @@ mta_archives/
 
 # @cap-js/cds-typer
 @cds-models
+
+
+# Ignore deploy script and sensitive files
+deploy.sh
+credentials.json
+config.yaml
+
+
+# auto generated wildcard
+db/.env

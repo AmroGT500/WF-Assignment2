@@ -26,7 +26,8 @@
     "watch-materials": "cds watch --open materials/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-plants": "cds watch --open plants/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-matgrps": "cds watch --open matgrps/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-mttyps": "cds watch --open mttyps/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-mttyps": "cds watch --open mttyps/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-businesspartners": "cds watch --open businesspartners/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "cds": {
     "requires": {
@@ -38,9 +39,6 @@
     "app/materials",
     "app/matgrps",
     "app/mttyps",
-    "app/plants",
-    "app/materials",
-    "app/matgrps",
-    "app/mttyps"
+    "app/businesspartners"
   ]
 }
